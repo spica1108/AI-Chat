@@ -3,6 +3,8 @@
 import { Icon } from '@iconify/vue';
 import { ConversationProps } from './types';
 import ConversationList from './components/ConversationList.vue';
+import ProviderSelect from './components/ProviderSelect.vue';
+
 const items: ConversationProps[] = [
   { id: 1, selectedModel: 'gpt-3.5-turbo', title: 'Conversation 1', createdAt: '2024-06-01 10:00',updatedAt: '2024-06-01 10:00' },
   { id: 2, selectedModel: 'gpt-4', title: 'Conversation 2', createdAt: '2024-06-02 11:30',updatedAt: '2024-06-02 11:30' },
@@ -16,6 +18,7 @@ const items: ConversationProps[] = [
 
 ];
 console.log('This message is being logged by "App.vue", included via Vite');
+
 </script>
 
 <template>
@@ -46,7 +49,7 @@ console.log('This message is being logged by "App.vue", included via Vite');
 
     </div>
     <div class="h-full flex-1">
-      content
+      <ProviderSelect />
     </div>
   </div>
 
