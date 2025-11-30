@@ -1,3 +1,10 @@
+<script setup lang="ts">
+
+import { ConversationProps } from '../types'
+//传入ts类型，怎样的数据
+defineProps<{ items: ConversationProps[] }>()
+</script>
+
 <template>
   <div class="conversation-list">
     <!-- 鼠标点击有箭头效果 -->
@@ -16,9 +23,3 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import { ConversationProps } from '../types'
-//传入ts类型，怎样的数据
-defineProps<{ items: ConversationProps[] }>()
-</script>
