@@ -10,3 +10,14 @@ export interface ConversationProps {
   providedId: number; //使用哪个模型创建的conversation
 }
 //接下来创建对应的组件
+
+export interface ProviderProps {
+  id: number;
+  name: string;
+  title?: string;
+  desc?: string;  //说明信息
+  avatar?: string;  //图标
+  createdAt: string;
+  updatedAt: string;
+  models: string[];  //支持的模型列表
+}

@@ -1,9 +1,12 @@
 <script setup lang="ts">
 
+import { ref } from 'vue';
 import { Icon } from '@iconify/vue';
-import { ConversationProps } from './types';
+import { ConversationProps, ProviderProps } from './types';
 import ConversationList from './components/ConversationList.vue';
 import ProviderSelect from './components/ProviderSelect.vue';
+import MessageInput from './components/MessageInput.vue';
+const selectedModel = ref();
 
 const items: ConversationProps[] = [
   { id: 1, selectedModel: 'gpt-3.5-turbo', title: 'Conversation 1', createdAt: '2024-06-01 10:00',updatedAt: '2024-06-01 10:00' },
@@ -15,11 +18,34 @@ const items: ConversationProps[] = [
   { id: 1, selectedModel: 'gpt-3.5-turbo', title: 'Conversation 1', createdAt: '2024-06-01 10:00',updatedAt: '2024-06-01 10:00' },
   { id: 2, selectedModel: 'gpt-4', title: 'Conversation 2', createdAt: '2024-06-02 11:30',updatedAt: '2024-06-02 11:30' },
   { id: 3, selectedModel: 'gpt-3.5-turbo', title: 'Conversation 3', createdAt: '2024-06-03 14:15', updatedAt: '2024-06-03 14:15' },
-
 ];
+
+const providers: ProviderProps[] = [
+  {
+  id: 1,
+  name: '文心一言',
+  desc: '文心一言 百度出品的大模型',
+  models: ['ERNIE-4.0-8K', 'ERNIE-3.5-8K', 'ERNIE-Speed-8K'], 
+  avatar: 'https://img.alicdn.com/imgextra/i4/O1CN01RyvC8Z1sUKjO6NtNl_!!6000000005765-2-tps-200-200.png',
+  createdAt: '2024-07-03',
+  updatedAt: '2024-07-03'
+  },
+  {
+    id: 2,
+    name: '通义千问',
+    desc: '通义千问',
+    // https://help.aliyun.com/zh/dashscope/developer-reference/api-details?spm=a2c4g.11186623.0.
+    models: ['qwen-turbo', 'qwen-plus', 'qwen-max'],
+    avatar: 'https://img.alicdn.com/imgextra/i4/O1CN01RyvC8Z1sUKjO6NtNl_!!6000000005765-2-tps-200-200.png',
+    createdAt: '2024-07-03',
+    updatedAt: '2024-07-03'
+  }
+]
+
 console.log('This message is being logged by "App.vue", included via Vite');
 
 </script>
+
 
 <template>
   <!-- 整体布局，左侧是对话列表，右侧是聊天内容区域 -->
@@ -48,8 +74,16 @@ console.log('This message is being logged by "App.vue", included via Vite');
       </div>
 
     </div>
-    <div class="h-full flex-1">
-      <ProviderSelect />
+    <!-- 设置高度 -->
+    <div class="h-full flex-1 flex items-center">
+      <div class="w-[80%] mx-auto h-full">
+        <div class="flex items-center h-[85%]">
+          <ProviderSelect :items="providers" v-model="selectedModel" />
+        </div>
+        <div class="flex items-center h-[15%]">
+          <MessageInput />
+        </div>
+      </div>
     </div>
   </div>
 
