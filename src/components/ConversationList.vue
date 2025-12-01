@@ -1,8 +1,15 @@
 <script setup lang="ts">
-
+import { useRouter } from 'vue-router'//引入路由,钩子函数
 import { ConversationProps } from '../types'
 //传入ts类型，怎样的数据
 defineProps<{ items: ConversationProps[] }>()
+const router = useRouter();//获取路由实例
+const goToConversation = (id: number) => {
+  //导航到指定会话页面
+  //把应用的地址变成 /conversation/{id}?name=viking#foo 并触发路由跳转
+  router.push({ path: `/conversation/${id}`,query: { name:'viking' },hash: '#foo' });
+  //跳转到指定路径
+};
 </script>
 
 <template>
@@ -13,7 +20,7 @@ defineProps<{ items: ConversationProps[] }>()
       v-for="item in items"
       :key="item.id"
     >
-      <a href="#">
+      <a href="" @click.prevent="goToConversation(item.id)">
         <div class="flex justify-between items-center text-sm leading-5 text-gray-500">
           <span>{{ item.selectedModel }}</span>
           <span>{{ item.updatedAt }}</span>

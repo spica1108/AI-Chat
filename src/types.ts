@@ -21,3 +21,14 @@ export interface ProviderProps {
   updatedAt: string;
   models: string[];  //支持的模型列表
 }
+
+export type MessageStatus = 'loading' | 'streaming' | 'finished';
+export interface MessageProps {
+  id: number;
+  content: string; //消息内容
+  type: 'question' | 'answer'; //消息类型，问题，答案
+  conversationId: number; //所属对话ID
+  status?: MessageStatus; //消息状态，可选，question类型没有状态
+  createdAt: string;
+  updatedAt: string;
+}
