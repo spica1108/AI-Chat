@@ -2,6 +2,7 @@
 
 import { ref } from 'vue';
 import { Icon } from '@iconify/vue';
+import Button from './components/Button.vue';
 import ConversationList from './components/ConversationList.vue';
 import ProviderSelect from './components/ProviderSelect.vue';
 import MessageInput from './components/MessageInput.vue';
@@ -28,7 +29,9 @@ console.log('This message is being logged by "App.vue", included via Vite');
         <!-- 路由跳转 -->
         <RouterLink to="/">
         <button
-          class="shadow-sm inline-flex items-center justify-center bg-emerald-600 text-white hover:bg-emerald-700 border border-emerald-600 h-[32px] py-[8px] px-[15px] text-sm rounded-[4px] transition-colors">
+          class="shadow-sm inline-flex items-center justify-center 
+          bg-emerald-600 text-white hover:bg-emerald-700 border border-emerald-600 
+          h-[32px] py-[8px] px-[15px] text-sm rounded-[4px] transition-colors">
           <!-- 这是图标 -->
           <Icon icon="radix-icons:chat-bubble" class="mr-2"></Icon>
           新建聊天
@@ -38,7 +41,9 @@ console.log('This message is being logged by "App.vue", included via Vite');
         <!-- 路由跳转 -->
         <RouterLink to="/settings">
         <button
-          class="shadow-sm inline-flex items-center justify-center bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white border border-emerald-600 h-[32px] py-[8px] px-[15px] text-sm rounded-[4px] transition-colors">
+          class="shadow-sm inline-flex items-center justify-center 
+          bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white border border-emerald-600 
+          h-[32px] py-[8px] px-[15px] text-sm rounded-[4px] transition-colors">
         <Icon icon="radix-icons:gear" class="mr-2"></Icon>
           应用设置
         </button>
@@ -48,6 +53,7 @@ console.log('This message is being logged by "App.vue", included via Vite');
     </div>
     <!-- 设置高度 -->
     <div class="h-full flex-1">
+      <!-- <Button color="green">Test Button</Button> -->
       <RouterView/>
     </div>
   </div>
