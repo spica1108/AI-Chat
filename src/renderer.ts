@@ -47,7 +47,7 @@ const router = createRouter({
   routes
 });
 const app = createApp(App);
-app.component('Icon', Icon);
+app.component('Icon', Icon);//全局注册Icon组件
 app.use(router);
 app.mount('#app');
 
