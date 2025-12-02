@@ -28,6 +28,7 @@
 import { createApp } from 'vue';
 // Memory路由模式，路由不会同步到URL，仅在内存管理路由状态
 import { createRouter, createMemoryHistory } from 'vue-router';
+import { Icon } from '@iconify/vue';
 import App from './App.vue';
 import Home from './views/Home.vue';
 import Conversation from './views/Conversation.vue';
@@ -46,6 +47,7 @@ const router = createRouter({
   routes
 });
 const app = createApp(App);
+app.component('Icon', Icon);
 app.use(router);
 app.mount('#app');
 

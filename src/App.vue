@@ -4,9 +4,6 @@ import { ref } from 'vue';
 import { Icon } from '@iconify/vue';
 import Button from './components/Button.vue';
 import ConversationList from './components/ConversationList.vue';
-import ProviderSelect from './components/ProviderSelect.vue';
-import MessageInput from './components/MessageInput.vue';
-const selectedModel = ref();
 import { conversations } from './testData'
 console.log('This message is being logged by "App.vue", included via Vite');
 
@@ -28,32 +25,26 @@ console.log('This message is being logged by "App.vue", included via Vite');
       <div class="h-[10%] grid grid-cols-2 gap-2 p-2">
         <!-- 路由跳转 -->
         <RouterLink to="/">
-        <button
-          class="shadow-sm inline-flex items-center justify-center 
-          bg-emerald-600 text-white hover:bg-emerald-700 border border-emerald-600 
-          h-[32px] py-[8px] px-[15px] text-sm rounded-[4px] transition-colors">
+        <Button icon-name="radix-icons:chat-bubble" class="w-full">
           <!-- 这是图标 -->
-          <Icon icon="radix-icons:chat-bubble" class="mr-2"></Icon>
           新建聊天
-        </button>
+        </Button>
         </RouterLink>
 
         <!-- 路由跳转 -->
         <RouterLink to="/settings">
-        <button
-          class="shadow-sm inline-flex items-center justify-center 
-          bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white border border-emerald-600 
-          h-[32px] py-[8px] px-[15px] text-sm rounded-[4px] transition-colors">
-        <Icon icon="radix-icons:gear" class="mr-2"></Icon>
-          应用设置
-        </button>
+          <Button icon-name="radix-icons:gear" plain class="w-full">
+            应用设置
+          </Button>
         </RouterLink>
       </div>
 
     </div>
     <!-- 设置高度 -->
     <div class="h-full flex-1">
-      <!-- <Button color="green">Test Button</Button> -->
+      <Button color="green" plain loading icon-name="radix-icons:gear">
+        Test Button
+      </Button>
       <RouterView/>
     </div>
   </div>
