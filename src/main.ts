@@ -1,18 +1,17 @@
 import { app, BrowserWindow } from 'electron';
-import { ChatCompletion } from '@baiducloud/qianfan'; 
-import path from 'node:path';
-import started from 'electron-squirrel-startup';
+import { ChatCompletion } from '@baiducloud/qianfan'
+import path from 'path';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
-if (started) {
+if (require('electron-squirrel-startup')) {
   app.quit();
 }
 
 const createWindow = async () => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1024,
+    height: 768,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
     },
@@ -22,27 +21,27 @@ const createWindow = async () => {
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
     mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL);
   } else {
-    mainWindow.loadFile(
-      path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`),
-    );
+    mainWindow.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`));
   }
 
   // Open the DevTools.
   mainWindow.webContents.openDevTools();
 
-  const client = new ChatCompletion();
-  //发送请求
-  const resp = await client.chat({
-    //发送信息
+  const client = new ChatCompletion()
+  const stream = await client.chat({
     messages: [
-      {
-        role: 'user',
-        content: '你好，欢迎使用千帆大模型！',
-      },
+      {"role":"user","content":"你好"},
+      {"role":"assistant","content":"如果您有任何问题，请随时向我提问。"},
+      {"role":"user","content": "我在上海，周末可以去哪里玩？"},
+      {"role":"assistant","content": "上海是一个充满活力和文化氛围的城市，有很多适合周末游玩的地方。"},
+      {"role":"user","content": "周末这里的天气怎么样？"}
     ],
-  },'ERNIE-Speed-128K');
-  console.log(resp);
-}
+    stream: true
+  }, 'ERNIE-Speed-128K')
+  for await (const chunk of stream) {
+    console.log(chunk)
+  }
+};
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
