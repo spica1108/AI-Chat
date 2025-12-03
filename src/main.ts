@@ -1,6 +1,9 @@
 import { app, BrowserWindow } from 'electron';
 import { ChatCompletion } from '@baiducloud/qianfan'
 import path from 'path';
+//读取环境变量
+import 'dotenv/config';
+import OpenAI from 'openai';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -27,20 +30,36 @@ const createWindow = async () => {
   // Open the DevTools.
   mainWindow.webContents.openDevTools();
 
-  const client = new ChatCompletion()
-  const stream = await client.chat({
+  const openai = new OpenAI({
+    apiKey: process.env['QWEN_API_KEY'],
+    baseURL:'https://dashscope.aliyuncs.com/compatible-mode/v1'
+  });
+  //发送请求
+  const stream = await openai.chat.completions.create({
     messages: [
-      {"role":"user","content":"你好"},
-      {"role":"assistant","content":"如果您有任何问题，请随时向我提问。"},
-      {"role":"user","content": "我在上海，周末可以去哪里玩？"},
-      {"role":"assistant","content": "上海是一个充满活力和文化氛围的城市，有很多适合周末游玩的地方。"},
-      {"role":"user","content": "周末这里的天气怎么样？"}
+      { role: 'user', content: '你好' }
     ],
+    model: 'qwen-turbo',
     stream: true
-  }, 'ERNIE-Speed-128K')
-  for await (const chunk of stream) {
-    console.log(chunk)
+  })
+  for await(const chunk of stream){
+    console.log(chunk.choices[0].delta);
   }
+  
+  // const client = new ChatCompletion()
+  // const stream = await client.chat({
+  //   messages: [
+  //     {"role":"user","content":"你好"},
+  //     {"role":"assistant","content":"如果您有任何问题，请随时向我提问。"},
+  //     {"role":"user","content": "我在上海，周末可以去哪里玩？"},
+  //     {"role":"assistant","content": "上海是一个充满活力和文化氛围的城市，有很多适合周末游玩的地方。"},
+  //     {"role":"user","content": "周末这里的天气怎么样？"}
+  //   ],
+  //   stream: true
+  // }, 'ERNIE-Speed-128K')
+  // for await (const chunk of stream) {
+  //   console.log(chunk)
+  // }
 };
 
 // This method will be called when Electron has finished
