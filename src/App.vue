@@ -42,9 +42,9 @@ console.log('This message is being logged by "App.vue", included via Vite');
     </div>
     <!-- 设置高度 -->
     <div class="h-full flex-1">
-      <Button color="green" plain loading icon-name="radix-icons:gear">
+      <!-- <Button color="green" plain loading icon-name="radix-icons:gear">
         Test Button
-      </Button>
+      </Button> -->
       <RouterView/>
     </div>
   </div>
