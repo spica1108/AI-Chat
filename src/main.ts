@@ -4,6 +4,8 @@ import path from 'path';
 //读取环境变量
 import 'dotenv/config';
 import OpenAI from 'openai';
+//需要node.js模块
+import fs from 'fs/promises'//将所有模块promise化
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -30,21 +32,38 @@ const createWindow = async () => {
   // Open the DevTools.
   mainWindow.webContents.openDevTools();
 
-  const openai = new OpenAI({
+  const client = new OpenAI({
     apiKey: process.env['QWEN_API_KEY'],
     baseURL:'https://dashscope.aliyuncs.com/compatible-mode/v1'
   });
-  //发送请求
-  const stream = await openai.chat.completions.create({
-    messages: [
-      { role: 'user', content: '你好' }
-    ],
-    model: 'qwen-turbo',
-    stream: true
+  //大模型读取图片
+  //把buffer对象转换成base64编码
+  const imageBuffer = await fs.readFile('C:/Users/ls/Desktop/dog.jpeg')
+  const base64Image = imageBuffer.toString('base64')
+  console.log('base64', base64Image)
+  const resp = await client.chat.completions.create({
+    messages: [ {
+      role: 'user',
+      content: [
+        { type: 'text', text: '图中是什么动物？'},
+        { type: 'image_url', image_url: { url: `data:image/jpeg;base64,${base64Image}`}}
+      ]
+    }],
+    model: 'qwen-vl-plus'
   })
-  for await(const chunk of stream){
-    console.log(chunk.choices[0].delta);
-  }
+
+  //发送请求
+  // const stream = await client.chat.completions.create({
+  //   messages: [
+  //     { role: 'user', content: '你好' }
+  //   ],
+  //   model: 'qwen-turbo',
+  //   stream: true
+  // })
+  // for await(const chunk of stream){
+  //   console.log(chunk.choices[0].delta);
+  // }
+  console.log('resp',resp.choices[0].message);
   
   // const client = new ChatCompletion()
   // const stream = await client.chat({
