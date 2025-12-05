@@ -2,10 +2,29 @@
 
 import { ref } from 'vue';
 import { Icon } from '@iconify/vue';
+import { onMounted } from 'vue';
+import { db } from './db'
 import Button from './components/Button.vue';
 import ConversationList from './components/ConversationList.vue';
-import { conversations } from './testData'
+import { conversations,providers } from './testData'
 console.log('This message is being logged by "App.vue", included via Vite');
+
+// //增删改查操作
+// onMounted(async() =>{
+  //插入
+  //providers假数据，插入第0项
+  // const insertedId = await db.providers.add(providers[0])
+  // console.log('insertedId',insertedId);
+  //查询
+  // const items = await db.providers.where({ id:2 }).toArray()
+  // console.log('items',items);
+  //更新
+  // const updateItem = await db.providers.update(1,{ desc: 'updated desc' })
+  // console.log('updatedItem', updateItem);
+  //删除
+  // const deletedItem = await db.providers.delete(1)
+  // console.log('deletedItem', deletedItem)
+// })
 
 </script>
 

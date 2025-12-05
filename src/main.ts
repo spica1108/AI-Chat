@@ -1,13 +1,6 @@
 import { app, BrowserWindow } from 'electron';
-import { ChatCompletion } from '@baiducloud/qianfan'
-import path from 'path';
-//读取环境变量
-import 'dotenv/config';
-import OpenAI from 'openai';
-//需要node.js模块
-//import fs from 'fs/promises'//将所有模块promise化
-import fs from 'fs'
-
+import path from 'path'
+import 'dotenv/config'
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -34,69 +27,7 @@ const createWindow = async () => {
   // Open the DevTools.
   mainWindow.webContents.openDevTools();
 
-  const client = new OpenAI({
-    apiKey: process.env['QWEN_API_KEY'],
-    baseURL:'https://dashscope.aliyuncs.com/compatible-mode/v1'
-  });
-  //读取文件
-  //文件上传
-  const fileObj = await client.files.create({ 
-    file: fs.createReadStream('C:/Users/ls/Desktop/doc.pdf'), 
-    purpose: 'file-extract' as any })
-  console.log('resp', fileObj)
-  const resp = await client.chat.completions.create({
-    messages: [
-      {"role": "system", "content": "You are a helpful assistant."},
-      { role: 'system', content: `fileid://${fileObj.id}`},
-      {"role": "user", "content": "请帮忙概括文件讲述了什么"},
-    ],
-    model: 'qwen-long'
-  })
-
-  //大模型读取图片
-  //把buffer对象转换成base64编码
-  // const imageBuffer = await fs.readFile('C:/Users/ls/Desktop/dog.jpeg')
-  // const base64Image = imageBuffer.toString('base64')
-  // console.log('base64', base64Image)
-  // const resp = await client.chat.completions.create({
-  //   messages: [ {
-  //     role: 'user',
-  //     content: [
-  //       { type: 'text', text: '图中是什么动物？'},
-  //       { type: 'image_url', image_url: { url: `data:image/jpeg;base64,${base64Image}`}}
-  //     ]
-  //   }],
-  //   model: 'qwen-vl-plus'
-  // })
-
-  //发送请求
-  // const stream = await client.chat.completions.create({
-  //   messages: [
-  //     { role: 'user', content: '你好' }
-  //   ],
-  //   model: 'qwen-turbo',
-  //   stream: true
-  // })
-  // for await(const chunk of stream){
-  //   console.log(chunk.choices[0].delta);
-  // }
-  console.log('resp',resp.choices[0].message);
-  
-  // const client = new ChatCompletion()
-  // const stream = await client.chat({
-  //   messages: [
-  //     {"role":"user","content":"你好"},
-  //     {"role":"assistant","content":"如果您有任何问题，请随时向我提问。"},
-  //     {"role":"user","content": "我在上海，周末可以去哪里玩？"},
-  //     {"role":"assistant","content": "上海是一个充满活力和文化氛围的城市，有很多适合周末游玩的地方。"},
-  //     {"role":"user","content": "周末这里的天气怎么样？"}
-  //   ],
-  //   stream: true
-  // }, 'ERNIE-Speed-128K')
-  // for await (const chunk of stream) {
-  //   console.log(chunk)
-  // }
-};
+}
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
