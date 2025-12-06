@@ -1,12 +1,13 @@
 <script setup lang="ts">
 
-import { ref } from 'vue';
 import { Icon } from '@iconify/vue';
-import { onMounted } from 'vue';
-import { db } from './db'
+import { onMounted, ref } from 'vue';
+import { db, initProviders } from './db'
 import Button from './components/Button.vue';
 import ConversationList from './components/ConversationList.vue';
-import { conversations,providers } from './testData'
+import { providers } from './testData'
+import { Conversation } from 'openai/resources/conversations/conversations';
+import { ConversationProps } from './types';
 console.log('This message is being logged by "App.vue", included via Vite');
 
 // //增删改查操作
@@ -25,6 +26,13 @@ console.log('This message is being logged by "App.vue", included via Vite');
   // const deletedItem = await db.providers.delete(1)
   // console.log('deletedItem', deletedItem)
 // })
+
+//获取动态数据
+const conversations = ref<ConversationProps[]>([])
+onMounted(async() =>{
+  await initProviders()
+  conversations.value = await db.conversations.toArray()//添加
+})
 
 </script>
 

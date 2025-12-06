@@ -7,7 +7,7 @@ export interface ConversationProps {
   selectedModel: string; //选择的模型
   createdAt: string; //创建时间
   updatedAt: string; //最后更新时间
-  providedId: number; //使用哪个模型创建的conversation
+  providerId: number; //使用哪个模型创建的conversation
 }
 //接下来创建对应的组件
 

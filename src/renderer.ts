@@ -38,7 +38,7 @@ import './index.css';
 //路由规则
 const routes = [
   { path: '/', component: Home },
-  { path: '/conversation/:id', component: Conversation },
+  { path: '/conversation/:id?', component: Conversation },
   { path: '/settings', component: Settings }
 ];
 
