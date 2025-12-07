@@ -1,4 +1,5 @@
 //初始化数据库
+//基于Dexie的本地数据库实例，用来在 Electron持久化存储应用的数据
 import Dexie, { type EntityTable } from "dexie";
 import { providers , conversations, messages } from "./testData";
 import { ProviderProps ,ConversationProps, MessageProps } from "./types";

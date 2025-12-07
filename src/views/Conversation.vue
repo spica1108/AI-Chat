@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { ref,watch  } from 'vue';
+import { ref, watch, onMounted  } from 'vue';
 import MessageInput from '../components/MessageInput.vue';
 import MessageList from '../components/MessageList.vue';
 import { useRoute } from 'vue-router';
 import { MessageProps,ConversationProps } from '../types';
-import { messages,conversations } from '../testData';
+// import { messages,conversations } from '../testData';
+import { db } from '../db'
 
 const route = useRoute();
 const filteredMessages = ref<MessageProps[]>([]);//类型，改成响应式数据
@@ -19,15 +20,50 @@ const conversation = ref<ConversationProps>();
 
 //把 messages 中所有 conversationId 等于当前 conversationId 的消息挑出来，
 // 赋值给 filteredMessages，通常用于只显示当前会话的消息列表
-filteredMessages.value = messages.filter(message => message.conversationId === conversationId);
+// filteredMessages.value = messages.filter(message => message.conversationId === conversationId);
 //空值检查，强制检查可能为none和undefined的值，避免报错
-conversation.value = conversations.find(item => item.id === conversationId)
+// conversation.value = conversations.find(item => item.id === conversationId)
 //route是响应式的，但是route.params.id不是响应式的，使用watch监听route.params.id的变化
-watch(() => route.params.id, (newId: string) => {
+const initMessageId = parseInt(route.query.init as string)//转换成数字
+//创建一个最新的message
+const creatingInitialMessage = async () => {
+  //忽略id
+  const createdData: Omit<MessageProps, 'id'> = {
+    content: '',
+    conversationId,
+    type: 'answer',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    status: 'loading'
+  }
+  const newMessageId = await db.messages.add(createdData)
+  //将最新一条插入到响应式数据
+  filteredMessages.value.push({ id: newMessageId, ...createdData })
+}
+
+
+watch(() => route.params.id, async (newId: string) => {
+  if (!newId) return;
   conversationId = parseInt(newId);
-  filteredMessages.value = messages.filter(message => message.conversationId === conversationId);
-  conversation.value = conversations.find(item => item.id === conversationId)
+  if (Number.isNaN(conversationId)) return;
+  conversation.value = await db.conversations.where({id: conversationId}).first()
+  filteredMessages.value = await db.messages.where({ conversationId }).toArray()
 });
+
+onMounted(async()=> {
+  //返回查询后的第一条数据
+  conversation.value = await db.conversations.where({id: conversationId}).first()
+  //转换成数组
+  filteredMessages.value = await db.messages.where({ conversationId }).toArray()
+  //判断当初始化conversation时进行创建
+  if (initMessageId){
+    await creatingInitialMessage()
+  }
+})
+
+
+
+
 </script>
 
 <template>
