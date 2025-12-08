@@ -25,6 +25,7 @@ const conversation = ref<ConversationProps>();
 // conversation.value = conversations.find(item => item.id === conversationId)
 //route是响应式的，但是route.params.id不是响应式的，使用watch监听route.params.id的变化
 const initMessageId = parseInt(route.query.init as string)//转换成数字
+let lastQuestion = ''
 //创建一个最新的message
 const creatingInitialMessage = async () => {
   //忽略id
@@ -39,6 +40,18 @@ const creatingInitialMessage = async () => {
   const newMessageId = await db.messages.add(createdData)
   //将最新一条插入到响应式数据
   filteredMessages.value.push({ id: newMessageId, ...createdData })
+  if(conversation.value){
+    const provider = await db.providers.where({ id: conversation.value.providerId }).first()
+    //发送信息
+    if (provider){
+      await window.electronAPI.startChat({
+        messageId: newMessageId,
+        providerName: provider.name,
+        selectedModel: conversation.value.selectedModel,
+        content: lastQuestion
+      })
+    }
+  }
 }
 
 
@@ -57,6 +70,9 @@ onMounted(async()=> {
   filteredMessages.value = await db.messages.where({ conversationId }).toArray()
   //判断当初始化conversation时进行创建
   if (initMessageId){
+    //查询，取最后一条
+    const lastMessage = await db.messages.where({ conversationId }).last()
+    lastQuestion = lastMessage?.content || ''
     await creatingInitialMessage()
   }
 })
