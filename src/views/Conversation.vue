@@ -75,6 +75,9 @@ onMounted(async()=> {
     lastQuestion = lastMessage?.content || ''
     await creatingInitialMessage()
   }
+  window.electronAPI.onUpdateMessaage((steamData)=>{
+    console.log('steam', steamData);
+  })
 })
 
 
