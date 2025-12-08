@@ -3,12 +3,14 @@
 <script setup lang="ts">
 import { onMounted,ref,computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useConversationStore } from '../stores/conversation'
 import { db } from '../db'
 import { ProviderProps } from '../types'
 import ProviderSelect from '../components/ProviderSelect.vue'
 import MessageInput from '../components/MessageInput.vue'
 
 const router = useRouter()
+const conversationStore = useConversationStore()
 const currentProvider = ref('')
 //动态数据
 const providers = ref<ProviderProps[]>([])
@@ -31,7 +33,7 @@ const createConversation = async(question: string) => {
   const currentDate = new Date().toISOString()
 
   //conversation创建
-  const conversationId = await db.conversations.add({
+  const conversationId = await conversationStore.createConversation({
     title: question,
     providerId,
     selectedModel,

@@ -2,7 +2,7 @@
 
 import { Icon } from '@iconify/vue';
 import { computed, onMounted } from 'vue';
-import { db, initProviders } from './db'
+import { initProviders } from './db'
 import Button from './components/Button.vue';
 import ConversationList from './components/ConversationList.vue';
 import { providers } from './testData'
@@ -33,7 +33,7 @@ const items = computed(() => conversationStore.items)
 
 onMounted(async() =>{
   await initProviders()
-  conversationStore.items = await db.conversations.toArray()//添加
+  conversationStore.fetchConversations()
 })
 
 </script>

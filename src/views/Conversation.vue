@@ -1,19 +1,22 @@
 <script setup lang="ts">
-import { ref, watch, onMounted  } from 'vue';
+import { ref, watch, onMounted, computed  } from 'vue';
 import MessageInput from '../components/MessageInput.vue';
 import MessageList from '../components/MessageList.vue';
+import { useConversationStore } from '../stores/conversation';
 import { useRoute } from 'vue-router';
 import { MessageProps,ConversationProps, MessageStatus } from '../types';
 // import { messages,conversations } from '../testData';
 import { db } from '../db'
 
 const route = useRoute();
+const conversationStore = useConversationStore()
 const filteredMessages = ref<MessageProps[]>([]);//类型，改成响应式数据
-const conversation = ref<ConversationProps>();
+
 // 获取路由参数中的 conversationId
 //转换成number类型
 //as string：TypeScript 的类型断言，告诉编译器“我知道,它是字符串”
- let conversationId = parseInt(route.params.id as string);
+//响应式对象
+let conversationId = ref(parseInt(route.params.id as string));
 //route 来自 useRoute()（vue-router），route.params 存放路径参数（动态路由片段）
 //route.params.id 对应路由定义中的占位符，例如路由 '/conversation/:id'，
 //当 URL 是 '/conversation/2' 时，route.params.id === '2'
@@ -25,13 +28,16 @@ const conversation = ref<ConversationProps>();
 // conversation.value = conversations.find(item => item.id === conversationId)
 //route是响应式的，但是route.params.id不是响应式的，使用watch监听route.params.id的变化
 const initMessageId = parseInt(route.query.init as string)//转换成数字
+//获取conversation信息
+const conversation = computed(() => conversationStore.getConversationById(conversationId.value))
+
 let lastQuestion = ''
 //创建一个最新的message
 const creatingInitialMessage = async () => {
   //忽略id
   const createdData: Omit<MessageProps, 'id'> = {
     content: '',
-    conversationId,
+    conversationId: conversationId.value,
     type: 'answer',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -57,21 +63,21 @@ const creatingInitialMessage = async () => {
 
 watch(() => route.params.id, async (newId: string) => {
   if (!newId) return;
-  conversationId = parseInt(newId);
+  conversationId.value = parseInt(newId);
   if (Number.isNaN(conversationId)) return;
-  conversation.value = await db.conversations.where({id: conversationId}).first()
-  filteredMessages.value = await db.messages.where({ conversationId }).toArray()
+  // conversation.value = await db.conversations.where({id: conversationId}).first()
+  filteredMessages.value = await db.messages.where({ conversationId: conversationId.value }).toArray()
 });
 
 onMounted(async()=> {
   //返回查询后的第一条数据
-  conversation.value = await db.conversations.where({id: conversationId}).first()
+  // conversation.value = await db.conversations.where({id: conversationId}).first()
   //转换成数组
-  filteredMessages.value = await db.messages.where({ conversationId }).toArray()
+  filteredMessages.value = await db.messages.where({ conversationId: conversationId.value }).toArray()
   //判断当初始化conversation时进行创建
   if (initMessageId){
     //查询，取最后一条
-    const lastMessage = await db.messages.where({ conversationId }).last()
+    const lastMessage = await db.messages.where({ conversationId: conversationId.value }).last()
     lastQuestion = lastMessage?.content || ''
     await creatingInitialMessage()
   }
