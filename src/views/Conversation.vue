@@ -3,7 +3,7 @@ import { ref, watch, onMounted  } from 'vue';
 import MessageInput from '../components/MessageInput.vue';
 import MessageList from '../components/MessageList.vue';
 import { useRoute } from 'vue-router';
-import { MessageProps,ConversationProps } from '../types';
+import { MessageProps,ConversationProps, MessageStatus } from '../types';
 // import { messages,conversations } from '../testData';
 import { db } from '../db'
 
@@ -75,13 +75,28 @@ onMounted(async()=> {
     lastQuestion = lastMessage?.content || ''
     await creatingInitialMessage()
   }
-  window.electronAPI.onUpdateMessaage((steamData)=>{
-    console.log('steam', steamData);
+  window.electronAPI.onUpdateMessaage(async (streamData)=>{
+    console.log('steam', streamData)
+    //更新数据库 database
+    const { messageId, data } = streamData
+    //在数据库拿到信息
+    const currentMessage = await db.messages.where({ id: messageId }).first()
+    if(currentMessage){
+      const updatedData = {
+        content: currentMessage.content + data.result,
+        status: data.is_end ? 'finished' : 'streaming' as MessageStatus,
+        updateAt: new Date().toISOString(),
+      }
+      await db.messages.update(messageId,updatedData)
+      //更新响应式数据 filteredMessages
+      const index = filteredMessages.value.findIndex(item => item.id === messageId)
+      if (index !== -1) {
+        //展开之前的信息
+        filteredMessages.value[index] = { ...filteredMessages.value[index], ...updatedData }
+      }
+    }
   })
 })
-
-
-
 
 </script>
 
