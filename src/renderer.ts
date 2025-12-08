@@ -26,6 +26,7 @@
  * ```
  */
 import { createApp } from 'vue';
+import { createPinia } from 'pinia'
 // Memory路由模式，路由不会同步到URL，仅在内存管理路由状态
 import { createRouter, createMemoryHistory } from 'vue-router';
 import { Icon } from '@iconify/vue';
@@ -46,9 +47,11 @@ const router = createRouter({
   history: createMemoryHistory(),
   routes
 });
+const pinia = createPinia()
 const app = createApp(App);
 app.component('Icon', Icon);//全局注册Icon组件
 app.use(router);
+app.use(pinia)
 app.mount('#app');
 
 console.log(

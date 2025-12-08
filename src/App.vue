@@ -1,13 +1,13 @@
 <script setup lang="ts">
 
 import { Icon } from '@iconify/vue';
-import { onMounted, ref } from 'vue';
+import { computed, onMounted } from 'vue';
 import { db, initProviders } from './db'
 import Button from './components/Button.vue';
 import ConversationList from './components/ConversationList.vue';
 import { providers } from './testData'
 import { Conversation } from 'openai/resources/conversations/conversations';
-import { ConversationProps } from './types';
+import { useConversationStore } from './stores/conversation';
 console.log('This message is being logged by "App.vue", included via Vite');
 
 // //增删改查操作
@@ -28,10 +28,12 @@ console.log('This message is being logged by "App.vue", included via Vite');
 // })
 
 //获取动态数据
-const conversations = ref<ConversationProps[]>([])
+const conversationStore = useConversationStore()
+const items = computed(() => conversationStore.items)
+
 onMounted(async() =>{
   await initProviders()
-  conversations.value = await db.conversations.toArray()//添加
+  conversationStore.items = await db.conversations.toArray()//添加
 })
 
 </script>
@@ -45,7 +47,7 @@ onMounted(async() =>{
       <RouterLink to="/conversation">
       <!-- 底部按钮固定，超过多少会向下滑动 -->
       <div class="h-[90%] overflow-y-auto">
-        <ConversationList :items="conversations" />
+        <ConversationList :items="items" />
       </div>
       </RouterLink>
 
