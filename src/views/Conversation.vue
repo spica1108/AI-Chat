@@ -3,6 +3,7 @@ import { ref, watch, onMounted, computed  } from 'vue';
 import MessageInput from '../components/MessageInput.vue';
 import MessageList from '../components/MessageList.vue';
 import { useConversationStore } from '../stores/conversation';
+import { useMessageStore } from '../stores/message';
 import { useRoute } from 'vue-router';
 import { MessageProps,ConversationProps, MessageStatus } from '../types';
 // import { messages,conversations } from '../testData';
@@ -10,7 +11,8 @@ import { db } from '../db'
 
 const route = useRoute();
 const conversationStore = useConversationStore()
-const filteredMessages = ref<MessageProps[]>([]);//类型，改成响应式数据
+const messageStore = useMessageStore()
+const filteredMessages = computed(()=>messageStore.items)
 
 // 获取路由参数中的 conversationId
 //转换成number类型
@@ -30,8 +32,8 @@ let conversationId = ref(parseInt(route.params.id as string));
 const initMessageId = parseInt(route.query.init as string)//转换成数字
 //获取conversation信息
 const conversation = computed(() => conversationStore.getConversationById(conversationId.value))
-
-let lastQuestion = ''
+//拿到数据
+let lastQuestion = computed(() => messageStore.getLastQuestion(conversationId.value))
 //创建一个最新的message
 const creatingInitialMessage = async () => {
   //忽略id
@@ -43,9 +45,7 @@ const creatingInitialMessage = async () => {
     updatedAt: new Date().toISOString(),
     status: 'loading'
   }
-  const newMessageId = await db.messages.add(createdData)
-  //将最新一条插入到响应式数据
-  filteredMessages.value.push({ id: newMessageId, ...createdData })
+  const newMessageId = await messageStore.createMessage(createdData)
   if(conversation.value){
     const provider = await db.providers.where({ id: conversation.value.providerId }).first()
     //发送信息
@@ -54,7 +54,7 @@ const creatingInitialMessage = async () => {
         messageId: newMessageId,
         providerName: provider.name,
         selectedModel: conversation.value.selectedModel,
-        content: lastQuestion
+        content: lastQuestion.value?.content || ''
       })
     }
   }
@@ -66,41 +66,21 @@ watch(() => route.params.id, async (newId: string) => {
   conversationId.value = parseInt(newId);
   if (Number.isNaN(conversationId)) return;
   // conversation.value = await db.conversations.where({id: conversationId}).first()
-  filteredMessages.value = await db.messages.where({ conversationId: conversationId.value }).toArray()
+  await messageStore.fetchMessagesByConversation(conversationId.value)
 });
 
 onMounted(async()=> {
   //返回查询后的第一条数据
   // conversation.value = await db.conversations.where({id: conversationId}).first()
   //转换成数组
-  filteredMessages.value = await db.messages.where({ conversationId: conversationId.value }).toArray()
+  await messageStore.fetchMessagesByConversation(conversationId.value)
   //判断当初始化conversation时进行创建
   if (initMessageId){
-    //查询，取最后一条
-    const lastMessage = await db.messages.where({ conversationId: conversationId.value }).last()
-    lastQuestion = lastMessage?.content || ''
     await creatingInitialMessage()
   }
   window.electronAPI.onUpdateMessaage(async (streamData)=>{
     console.log('steam', streamData)
-    //更新数据库 database
-    const { messageId, data } = streamData
-    //在数据库拿到信息
-    const currentMessage = await db.messages.where({ id: messageId }).first()
-    if(currentMessage){
-      const updatedData = {
-        content: currentMessage.content + data.result,
-        status: data.is_end ? 'finished' : 'streaming' as MessageStatus,
-        updateAt: new Date().toISOString(),
-      }
-      await db.messages.update(messageId,updatedData)
-      //更新响应式数据 filteredMessages
-      const index = filteredMessages.value.findIndex(item => item.id === messageId)
-      if (index !== -1) {
-        //展开之前的信息
-        filteredMessages.value[index] = { ...filteredMessages.value[index], ...updatedData }
-      }
-    }
+    messageStore.updateMessage(streamData)
   })
 })
 
