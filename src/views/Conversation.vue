@@ -9,11 +9,22 @@ import { MessageProps,ConversationProps, MessageStatus } from '../types';
 // import { messages,conversations } from '../testData';
 import { db } from '../db'
 
+const inputValue = ref('')
 const route = useRoute();
 const conversationStore = useConversationStore()
 const messageStore = useMessageStore()
 const filteredMessages = computed(()=>messageStore.items)
-
+//过滤消息
+const sendedMessages = computed(() => filteredMessages.value
+  .filter(message => message.status !== 'loading')
+  //格式转换
+  .map(message => {
+    return{ 
+      //如果形式是问题就是user...
+      role: message.type === 'question' ? 'user' : 'assistent',
+      content: message.content
+    }
+  }))
 // 获取路由参数中的 conversationId
 //转换成number类型
 //as string：TypeScript 的类型断言，告诉编译器“我知道,它是字符串”
@@ -33,7 +44,22 @@ const initMessageId = parseInt(route.query.init as string)//转换成数字
 //获取conversation信息
 const conversation = computed(() => conversationStore.getConversationById(conversationId.value))
 //拿到数据
-let lastQuestion = computed(() => messageStore.getLastQuestion(conversationId.value))
+const lastQuestion = computed(() => messageStore.getLastQuestion(conversationId.value))
+//创建初始信息
+const sendNewMessage = async (question: string) =>{
+  if (question){
+    const date = new Date().toISOString()
+    await messageStore.createMessage({
+      content: question,
+      conversationId: conversationId.value,
+      createdAt: date,
+      updatedAt:date,
+      type: 'question'
+    })
+    inputValue.value = ''
+    creatingInitialMessage()
+  }
+}
 //创建一个最新的message
 const creatingInitialMessage = async () => {
   //忽略id
@@ -54,7 +80,7 @@ const creatingInitialMessage = async () => {
         messageId: newMessageId,
         providerName: provider.name,
         selectedModel: conversation.value.selectedModel,
-        content: lastQuestion.value?.content || ''
+        messages: sendedMessages.value
       })
     }
   }
@@ -97,7 +123,8 @@ onMounted(async()=> {
     <MessageList :messages="filteredMessages" />
   </div>
   <div class="w-[80%] mx-auto h-[15%] flex items-center">
-    <MessageInput />
+  <!-- 发送后对话框里的值清空 -->
+    <MessageInput @create="sendNewMessage" v-model="inputValue" />
   </div>
 
 </template>

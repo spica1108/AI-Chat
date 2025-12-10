@@ -31,9 +31,10 @@ export const useMessageStore = defineStore('message',{
       const currentMessage = this.items.find(item => item.id === messageId)
       if(currentMessage){
         const updatedData = {
-          content: currentMessage.content + data.result,
           status: data.is_end ? 'finished' : 'streaming' as MessageStatus,
           updateAt: new Date().toISOString(),
+          //解决信息返回不完全
+          ...(!data.is_end && { content: currentMessage.content + data.result })
         }
         await db.messages.update(messageId,updatedData)
         //更新响应式数据 filteredMessages
