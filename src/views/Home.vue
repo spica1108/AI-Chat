@@ -60,7 +60,8 @@ const createConversation = async(question: string) => {
     <ProviderSelect :items="providers" v-model="currentProvider"></ProviderSelect>
   </div>
   <div class="flex items-center h-[15%]">
-    <MessageInput @create="createConversation" />
+    <!-- 没选择模型不能输入 -->
+    <MessageInput @create="createConversation" :disabled="currentProvider ===''" />
   </div>
 </div>
 </template>

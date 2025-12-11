@@ -35,6 +35,7 @@ import Home from './views/Home.vue';
 import Conversation from './views/Conversation.vue';
 import Settings from './views/Settings.vue';
 import './index.css';
+import { useConversationStore } from './stores/conversation';
 
 //路由规则
 const routes = [
@@ -47,6 +48,15 @@ const router = createRouter({
   history: createMemoryHistory(),
   routes
 });
+//to到哪里去
+router.beforeEach((to) =>{
+  const store = useConversationStore()
+  console.log('path', to.path);
+  // 不符合条件，内容就清空
+  if(!to.path.startsWith('/conversation/')){
+    store.selectedId = -1
+  }
+})
 const pinia = createPinia()
 const app = createApp(App);
 app.component('Icon', Icon);//全局注册Icon组件

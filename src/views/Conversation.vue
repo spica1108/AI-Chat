@@ -124,7 +124,8 @@ onMounted(async()=> {
   </div>
   <div class="w-[80%] mx-auto h-[15%] flex items-center">
   <!-- 发送后对话框里的值清空 -->
-    <MessageInput @create="sendNewMessage" v-model="inputValue" />
+   <!-- 有信息在loading或streaming就禁用 -->
+    <MessageInput @create="sendNewMessage" v-model="inputValue" :disabled="messageStore.isMessageLoading"/>
   </div>
 
 </template>

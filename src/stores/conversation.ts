@@ -5,6 +5,7 @@ import { ConversationProps } from "../types";
 
 export interface ConversationStore {
   items: ConversationProps[];
+  selectedId: number
 }
 
 export const useConversationStore = defineStore('conversation', {
@@ -12,7 +13,8 @@ export const useConversationStore = defineStore('conversation', {
   //定义store
   state: (): ConversationStore => {
     return {
-      items: []
+      items: [],
+      selectedId: -1
     }
   },
   actions: {
