@@ -8,6 +8,7 @@ import { useMessageStore } from '../stores/message'
 import { useProviderStore } from '../stores/provider'
 import { MessageProps } from '../types'
 import { db } from '../db'
+
 const inputValue = ref('')
 const route = useRoute()
 const conversationStore = useConversationStore()
@@ -25,8 +26,10 @@ const sendedMessages = computed(() => filteredMessages.value
 )
 let conversationId = ref(parseInt(route.params.id as string))
 const initMessageId = parseInt(route.query.init as string)
+//获取conversation信息
 const convsersation = computed(() => conversationStore.getConversationById(conversationId.value))
 const lastQuestion = computed(() => messageStore.getLastQuestion(conversationId.value))
+//创建初始信息
 const sendNewMessage = async (question: string) => {
   if (question) {
     const date = new Date().toISOString()
@@ -41,7 +44,9 @@ const sendNewMessage = async (question: string) => {
     creatingInitialMessage()
   }
 }
+//创建最新的消息
 const creatingInitialMessage = async () => {
+  //忽略id
   const createdData: Omit<MessageProps, 'id'> = {
     content: '',
     conversationId: conversationId.value,
@@ -53,11 +58,19 @@ const creatingInitialMessage = async () => {
   const newMessageId = await messageStore.createMessage(createdData)
   if (convsersation.value) {
     const provider = provdierStore.getProviderById(convsersation.value.providerId)
+    //发送消息
     if (provider) {
       console.log('provider', provider)
+      // 映射中文名称到英文标识（兼容旧数据）
+      const providerNameMap: Record<string, string> = {
+        '通义千问': 'dashscope',
+        '百度千帆': 'qianfan',
+        '文心一言': 'qianfan'
+      }
+      const mappedProviderName = providerNameMap[provider.name] || provider.name
       await window.electronAPI.startChat({
         messageId: newMessageId,
-        providerName: provider.name,
+        providerName: mappedProviderName,
         selectedModel: convsersation.value.selectedModel,
         messages: sendedMessages.value
       })
@@ -83,14 +96,17 @@ onMounted(async () => {
 </script>
 
 <template>
+  <!-- 对话标题 -->
 <div class="h-[5%] bg-gray-200 border-b border-gray-300 flex items-center px-3 justify-between" v-if="convsersation">
   <h3 class="font-semibold  text-gray-900">{{convsersation.title}}</h3>
   <span class="text-sm text-gray-500">{{convsersation.updatedAt}}</span>
 </div>
-<div class="w-[80%] mx-auto h-[75%] overflow-y-auto pt-2">
+<!-- 消息列表 -->
+<div class="w-[80%] mx-auto h-[85%] overflow-y-auto pt-2">
   <MessageList :messages="filteredMessages"/>
 </div>
-<div class="w-[80%] mx-auto h-[15%] flex items-center">
+<!-- 消息输入 -->
+<div class="w-[80%] mx-auto h-[10%] flex items-center">
   <MessageInput  @create="sendNewMessage" v-model="inputValue" :disabled="messageStore.isMessageLoading"/>
 </div>
 </template>

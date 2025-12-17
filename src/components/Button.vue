@@ -26,8 +26,8 @@ const props = withDefaults(defineProps<ButtonProps>(), {
 //例如：color="green" => bg-emerald-600 text-white hover:bg-
 const colorVariants: Record<ButtonColor,any> = {
   'green': {
-    plain: 'bg-green-50 text-green-700 hover:bg-green-700 border border-green-700 hover:text-white',
-    normal: 'bg-green-700 text-white hover:bg-green-700/90 border border-green-700'
+    plain: 'bg-emerald-50 text-green-700 hover:bg-emerald-500 border border-green-700 hover:text-white',
+    normal: 'bg-emerald-500 text-white hover:bg-emerald-500/90 border border-green-700'
   },
   'purple': {
     plain: 'bg-purple-50 text-purple-700 hover:bg-purple-700 border border-purple-700 hover:text-white',

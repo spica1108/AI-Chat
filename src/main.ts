@@ -28,7 +28,7 @@ const createWindow = async () => {
         messages: messages as any,
         stream: true
       }, selectedModel)
-      for await (const chunk of stream) {
+      for await (const chunk of stream as AsyncIterable<{ is_end: boolean; result: string }>) {
         const { is_end, result } = chunk
         const content = {
           messageId,
@@ -41,7 +41,7 @@ const createWindow = async () => {
       }
     } else if (providerName === 'dashscope') {
       const client = new OpenAI({
-        apiKey: process.env['QWEN_API_KEY'],
+        apiKey: process.env['ALI_API_KEY'],
         baseURL: 'https://dashscope.aliyuncs.com/compatible-mode/v1'
       })
       const stream = await client.chat.completions.create({
