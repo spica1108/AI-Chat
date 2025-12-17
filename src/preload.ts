@@ -5,5 +5,5 @@ import { CreateChatProps, OnUpdatedCallback } from "./types";
 
 contextBridge.exposeInMainWorld('electronAPI',{
   startChat:(data: CreateChatProps) => ipcRenderer.send('start-chat', data),
-  onUpdateMessaage: (callback:OnUpdatedCallback) => ipcRenderer.on('update-message',(_event,data)=> callback(data))
+  onUpdateMessage: (callback:OnUpdatedCallback) => ipcRenderer.on('update-message',(_event,data)=> callback(data))
 })

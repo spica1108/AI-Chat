@@ -6,6 +6,7 @@ import { initProviders } from './db'
 import Button from './components/Button.vue';
 import ConversationList from './components/ConversationList.vue';
 import { providers } from './testData'
+import { useProviderStore } from './stores/provider'
 import { Conversation } from 'openai/resources/conversations/conversations';
 import { useConversationStore } from './stores/conversation';
 console.log('This message is being logged by "App.vue", included via Vite');
@@ -29,11 +30,14 @@ console.log('This message is being logged by "App.vue", included via Vite');
 
 //获取动态数据
 const conversationStore = useConversationStore()
+const provdierStore = useProviderStore()
 const items = computed(() => conversationStore.items)
 
 onMounted(async() =>{
   await initProviders()
+  // 获取最初需要的数据
   conversationStore.fetchConversations()
+  provdierStore.fetchProviders()
 })
 
 </script>

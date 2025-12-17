@@ -4,8 +4,8 @@
 import { onMounted,ref,computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useConversationStore } from '../stores/conversation'
+import { useProviderStore } from '../stores/provider'
 import { db } from '../db'
-import { ProviderProps } from '../types'
 import ProviderSelect from '../components/ProviderSelect.vue'
 import MessageInput from '../components/MessageInput.vue'
 
@@ -13,10 +13,8 @@ const router = useRouter()
 const conversationStore = useConversationStore()
 const currentProvider = ref('')
 //动态数据
-const providers = ref<ProviderProps[]>([])
-onMounted(async() =>{
-  providers.value = await db.providers.toArray()
-})
+const providerStore = useProviderStore()
+const providers = computed(() => providerStore.items)
 //做分割获取对应的值，因为 provider.id 和 model 是连一起的
 const modelInfo = computed(()=>{
   const [ providerId, selectedModel ] = currentProvider.value.split('/')
@@ -48,6 +46,7 @@ const createConversation = async(question: string) => {
     updatedAt: currentDate,
     type: 'question'
   })
+  conversationStore.selectedId = conversationId
   //第一次创建对话，自动进行回复的message创建
   router.push(`/conversation/${conversationId}?init=${newMessageId}`)
 }
