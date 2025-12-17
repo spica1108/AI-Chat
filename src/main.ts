@@ -19,7 +19,7 @@ const createWindow = async () => {
       preload: path.join(__dirname, 'preload.js'),
     },
   });
-  ipcMain.on('start-chat', async (event, data: CreateChatProps ) => {
+  ipcMain.on('start-chat', async (event, data: CreateChatProps) => {
     console.log('hey', data)
     const { providerName, messages, messageId, selectedModel } = data
     if (providerName === 'qianfan') {
