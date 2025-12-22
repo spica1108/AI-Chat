@@ -67,6 +67,8 @@ const creatingInitialMessage = async () => {
     status: 'loading'
   }
   const newMessageId = await messageStore.createMessage(createdData)
+  //加载阶段
+  await messageScrollToBottom()
   if (convsersation.value) {
     const provider = provdierStore.getProviderById(convsersation.value.providerId)
     //发送消息
@@ -100,11 +102,30 @@ onMounted(async () => {
   if (initMessageId) {
     await creatingInitialMessage()
   }
+  //记录下更新之前整个messagelist信息列表容器的高度，记录下更新以后具体容器的高度，
+  //如果更新以后高度更大了，说明有换行，再进行滚动
+  //记录之前messagelist高度
+  let currentMessageListHeight = 0
+  const checkAndScrollToBottom = async () => {
+    if (messageListRef.value) {
+      const newHeight = messageListRef.value._ref.clientHeight
+      console.log('newHeight', newHeight)
+      console.log('currentMessageListHeight', currentMessageListHeight)
+      if (newHeight > currentMessageListHeight) {
+        console.log('滚动')
+        currentMessageListHeight = newHeight
+        await messageScrollToBottom()
+      }
+    }
+  }
   window.electronAPI.onUpdateMessage(async (streamData) => {
     console.log('stream', streamData)
     // update database
     // update filteredMessages
     messageStore.updateMessage(streamData)
+    //完成更新后持续滚动
+    await nextTick() //确保dom节点加载完毕
+    checkAndScrollToBottom()
   })
 })
 </script>
