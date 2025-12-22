@@ -1,15 +1,16 @@
 <script lang="ts" setup>
-import { ref, watch, onMounted, computed } from 'vue'
+import { ref, watch, onMounted, computed, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
 import MessageInput from '../components/MessageInput.vue'
 import MessageList from '../components/MessageList.vue'
 import { useConversationStore } from '../stores/conversation'
 import { useMessageStore } from '../stores/message'
 import { useProviderStore } from '../stores/provider'
-import { MessageProps } from '../types'
+import { MessageProps, MessageListInstance } from '../types'
 import { db } from '../db'
 
 const inputValue = ref('')
+const messageListRef = ref<MessageListInstance>()
 const route = useRoute()
 const conversationStore = useConversationStore()
 const messageStore = useMessageStore()
@@ -44,6 +45,16 @@ const sendNewMessage = async (question: string) => {
     creatingInitialMessage()
   }
 }
+//滚动到最下方的方法
+const messageScrollToBottom = async () => {
+  //确保dom节点加载完毕,拿到dom节点
+  await nextTick()
+  //位置，动态
+  if(messageListRef.value) {
+    messageListRef.value._ref.scrollIntoView({ block: 'end', behavior: 'smooth' })
+  }
+}
+
 //创建最新的消息
 const creatingInitialMessage = async () => {
   //忽略id
@@ -80,9 +91,12 @@ const creatingInitialMessage = async () => {
 watch(() => route.params.id, async (newId: string) => {
   conversationId.value = parseInt(newId)
   await messageStore.fetchMessagesByConversation(conversationId.value)
+  await messageScrollToBottom()
 })
 onMounted(async () => {
   await messageStore.fetchMessagesByConversation(conversationId.value)
+  await messageScrollToBottom()
+
   if (initMessageId) {
     await creatingInitialMessage()
   }
@@ -104,7 +118,7 @@ onMounted(async () => {
 <!-- 消息列表 -->
 <div class="w-full h-[85%] overflow-y-auto pt-2">
   <div class="w-[80%] mx-auto">
-    <MessageList :messages="filteredMessages"/>
+    <MessageList :messages="filteredMessages" ref="messageListRef"/>
   </div>
 </div>
 <!-- 消息输入 -->

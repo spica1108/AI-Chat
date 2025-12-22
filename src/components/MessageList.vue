@@ -1,14 +1,21 @@
 <script lang="ts" setup>
+import { ref } from 'vue'
 import { Icon } from '@iconify/vue'
 import VueMarkdown from 'vue-markdown-render'
 import { MessageProps } from '../types'
 import markdownItHighlightjs from 'markdown-it-highlightjs'
 defineProps<{ messages: MessageProps[] }>()
 const plugins = [markdownItHighlightjs]
+const _ref = ref<HTMLDivElement>()
+//暴露dom节点,其他组件就能拿到
+defineExpose({
+  _ref: _ref
+})
 </script>
 
 <template>
-  <div class="message-list" >
+  <!-- 拿到dom节点 -->
+  <div class="message-list" ref="_ref">
     <div class="message-item mb-3" v-for="message in messages" :key="message.id">
       <div class="flex" :class="{'justify-end': message.type === 'question'}">
         <div>

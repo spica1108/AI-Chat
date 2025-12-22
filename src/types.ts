@@ -33,19 +33,23 @@ export interface MessageProps {
   updatedAt: string;
 }
 
-export interface CreateChatProps{
-  messages: { role: string; content:string }[],
+export interface CreateChatProps {
+  messages: { role: string; content: string }[],
   providerName: string,
   selectedModel: string,
   messageId: number,
 }
 
-export interface UpdatgedStreamData{
+export interface UpdatgedStreamData {
   messageId: number,
   data: {
-    is_end:boolean,
+    is_end: boolean,
     result: string
   }
 }
 
 export type OnUpdatedCallback = (data: UpdatgedStreamData) => void
+
+export interface MessageListInstance {
+  _ref: HTMLDivElement
+}
