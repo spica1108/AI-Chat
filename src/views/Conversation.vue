@@ -102,8 +102,10 @@ onMounted(async () => {
   <span class="text-sm text-gray-500">{{convsersation.updatedAt}}</span>
 </div>
 <!-- 消息列表 -->
-<div class="w-[80%] mx-auto h-[85%] overflow-y-auto pt-2">
-  <MessageList :messages="filteredMessages"/>
+<div class="w-full h-[85%] overflow-y-auto pt-2">
+  <div class="w-[80%] mx-auto">
+    <MessageList :messages="filteredMessages"/>
+  </div>
 </div>
 <!-- 消息输入 -->
 <div class="w-[80%] mx-auto h-[10%] flex items-center">

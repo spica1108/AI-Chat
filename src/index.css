@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
 body {
   /* 在全局CSS或Tailwind中重置 */
   font-family:

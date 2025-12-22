@@ -36,6 +36,7 @@ import Conversation from './views/Conversation.vue';
 import Settings from './views/Settings.vue';
 import './index.css';
 import { useConversationStore } from './stores/conversation';
+import 'highlight.js/styles/github-dark.min.css'
 
 //路由规则
 const routes = [
@@ -49,11 +50,11 @@ const router = createRouter({
   routes
 });
 //to到哪里去
-router.beforeEach((to) =>{
+router.beforeEach((to) => {
   const store = useConversationStore()
   console.log('path', to.path);
   // 不符合条件，内容就清空
-  if(!to.path.startsWith('/conversation/')){
+  if (!to.path.startsWith('/conversation/')) {
     store.selectedId = -1
   }
 })
